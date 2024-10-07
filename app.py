@@ -1,12 +1,22 @@
-from random import choice as rc  # Importing choice function for random selection
-from app import app, db  # Importing the Flask app and database instance
-from models import Hero, Power, HeroPower  # Importing the models for seeding
+from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from sqlalchemy.orm import validates
 
-# Entry point for the script
-if __name__ == '__main__':
-    with app.app_context():  # Ensure the application context is available for database operations
-        print("Clearing db...")
-        # Clear existing records from the database
-        Power.query.delete()  
-        Hero.query.delete()  
-        HeroPower.query.delete()
+# Initialize the Flask application
+app = Flask(__name__)
+
+# Configuring the database to use SQLite with a specified database file
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///superheroes.db'
+# Disable track modifications to reduce overhead
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize SQLAlchemy and Migrate for database management
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+# Importing model classes after initializing SQLAlchemy to avoid circular imports
+from models import Hero, Power, HeroPower
+
+        
+

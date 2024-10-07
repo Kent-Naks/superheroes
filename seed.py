@@ -30,4 +30,23 @@ if __name__ == '__main__':
         # Add all heroes to the session and commit them to the database
         db.session.add_all(heroes)
         db.session.commit()  # Commit the heroes to the database
+        
+        
+        # Associating Powers with Heroes
+        print("Adding powers to heroes...")
+        strengths = ["Strong", "Weak", "Average"]  # Possible strengths for hero powers
+        hero_powers = []  # List to hold HeroPower instances
+        for hero in heroes:
+            power = rc(powers)  # Randomly select a power for the hero
+            # Create a HeroPower instance linking hero and power
+            hero_power = HeroPower(
+                hero_id=hero.id,  # Use hero.id
+                power_id=power.id,  # Use power.id
+                strength=rc(strengths)  # Randomly assign strength
+            )
+            hero_powers.append(hero_power)  # Add to the list of hero powers
+
+        # Add all hero_power associations to the session and commit them to the database
+        db.session.add_all(hero_powers)
+        db.session.commit()
 

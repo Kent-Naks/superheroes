@@ -81,3 +81,63 @@ def update_power(id):
         }), 200
     else:
         return jsonify({"errors": ["Description must be at least 20 characters long."]}), 400
+
+# Handle both GET and POST methods for hero powers
+@app.route('/hero_powers', methods=['GET', 'POST'])
+def hero_powers():
+    if request.method == 'POST':
+        # Handle the creation of a new HeroPower association
+        data = request.get_json()
+        strength = data.get('strength')
+        hero_id = data.get('hero_id')
+        power_id = data.get('power_id')
+
+        # Validate strength input
+        if strength not in ['Strong', 'Weak', 'Average']:
+            return jsonify({"errors": ["Strength must be 'Strong', 'Weak', or 'Average'."]}), 400
+
+        # Validate the existence of the specified hero and power
+        hero = Hero.query.get(hero_id)
+        power = Power.query.get(power_id)
+
+        if not hero or not power:
+            return jsonify({"errors": ["Hero or Power not found."]}), 404
+
+        # Create a new HeroPower association and save to the database
+        hero_power = HeroPower(strength=strength, hero_id=hero_id, power_id=power_id)
+        db.session.add(hero_power)
+        db.session.commit()
+
+        # Return the details of the new HeroPower association as JSON
+        return jsonify({
+            "id": hero_power.id,
+            "strength": hero_power.strength,
+            "hero_id": hero.id,
+            "power_id": power.id,
+            "hero": {
+                "id": hero.id,
+                "name": hero.name,
+                "super_name": hero.super_name
+            },
+            "power": {
+                "id": power.id,
+                "name": power.name,
+                "description": power.description
+            }
+        }), 201
+
+    elif request.method == 'GET':
+        # Retrieve all HeroPower associations and return them as JSON
+        hero_powers = HeroPower.query.all()
+        return jsonify([{
+            "id": hero_power.id,
+            "strength": hero_power.strength,
+            "hero_id": hero_power.hero_id,
+            "power_id": hero_power.power_id,
+            "hero": hero_power.hero.to_dict(),
+            "power": hero_power.power.to_dict()
+        } for hero_power in hero_powers])
+
+# Run the application in debug mode
+if __name__ == '__main__':
+    app.run(debug=True)

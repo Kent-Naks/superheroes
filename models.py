@@ -53,3 +53,35 @@ class Power(db.Model):
             "name": self.name,
             "description": self.description
         }
+
+# HeroPower Model
+class HeroPower(db.Model):
+    __tablename__ = 'hero_powers'  # Name of the database table
+    id = db.Column(db.Integer, primary_key=True)  # Primary key for the association
+    hero_id = db.Column(db.Integer, db.ForeignKey('heroes.id'))  # Foreign key to the Hero table
+    power_id = db.Column(db.Integer, db.ForeignKey('powers.id'))  # Foreign key to the Power table
+    strength = db.Column(db.String, nullable=False)  # Strength level of the association
+
+    def __init__(self, hero_id, power_id, strength):
+        # Initialize HeroPower instance with hero and power IDs, and strength
+        self.hero_id = hero_id
+        self.power_id = power_id
+        self.strength = strength
+
+    @staticmethod
+    def validate_strength(strength):
+        # Validate the strength value
+        if strength not in ['Strong', 'Weak', 'Average']:
+            raise ValueError('Invalid strength value')
+
+    def to_dict(self):
+        # Convert HeroPower instance to a dictionary for JSON representation
+        return {
+            "id": self.id,
+            "hero_id": self.hero_id,
+            "power_id": self.power_id,
+            "strength": self.strength,
+            "hero": self.hero.to_dict(),  # Include hero details
+            "power": self.power.to_dict()   # Include power details
+        }
+

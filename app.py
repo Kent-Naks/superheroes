@@ -34,6 +34,27 @@ def get_hero(id):
     else:
         return jsonify({"error": "Hero not found"}), 404
 
+# Section 3: Power Routes
+# Routes for the Power resource
+@app.route('/powers', methods=['GET'])
+def get_powers():
+    # Retrieve all powers from the database and return them as JSON
+    powers = Power.query.all()
+    return jsonify([power.to_dict() for power in powers])
 
-        
+# Routes for the Power resource
+@app.route('/powers', methods=['GET'])
+def get_powers():
+    # Retrieve all powers from the database and return them as JSON
+    powers = Power.query.all()
+    return jsonify([power.to_dict() for power in powers])
+
+@app.route('/powers/<int:id>', methods=['GET'])
+def get_power(id):
+    # Retrieve a specific power by ID and return it as JSON
+    power = Power.query.get(id)
+    if power:
+        return jsonify(power.to_dict())
+    else:
+        return jsonify({"error": "Power not found"}), 404
 

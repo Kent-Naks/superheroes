@@ -58,3 +58,26 @@ def get_power(id):
     else:
         return jsonify({"error": "Power not found"}), 404
 
+# Route to update a specific power's description
+@app.route('/powers/<int:id>', methods=['PATCH'])
+def update_power(id):
+    # Retrieve the power by ID
+    power = Power.query.get(id)
+    if not power:
+        return jsonify({"error": "Power not found"}), 404
+
+    # Get the request data
+    data = request.get_json()
+    description = data.get('description')
+
+    # Validate that the description is at least 20 characters long
+    if description and len(description) >= 20:
+        power.description = description
+        db.session.commit()
+        return jsonify({
+            "id": power.id,
+            "name": power.name,
+            "description": power.description
+        }), 200
+    else:
+        return jsonify({"errors": ["Description must be at least 20 characters long."]}), 400

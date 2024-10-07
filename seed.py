@@ -49,4 +49,8 @@ if __name__ == '__main__':
         # Add all hero_power associations to the session and commit them to the database
         db.session.add_all(hero_powers)
         db.session.commit()
+        
+        #Finalization
+        print("Done seeding!")  # Indicate completion of the seeding process
+
 
